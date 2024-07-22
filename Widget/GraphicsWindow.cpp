@@ -67,7 +67,7 @@ void GraphicsWindow::slot_gameObjectPropertyChanged(QtProperty*_property_, const
 {
 	const QMetaObject* metaobj = m_active_object->metaObject();
 
-	//Ãû×Ö
+	//ÃƒÃ»Ã—Ã–
 	if (_property_->propertyName() == metaobj->property(0).name())
 	{
 		QString name = value.toString();
@@ -76,6 +76,7 @@ void GraphicsWindow::slot_gameObjectPropertyChanged(QtProperty*_property_, const
 		if (name != new_name)
 		{
 			m_active_object->setObjectName(new_name);
+			m_active_object->standard_item()->setText(name);
 			emit gameObjectBehavior(GAMEOBJECT_NAME_CHANGE, m_active_object);
 		}
 		else
@@ -84,6 +85,13 @@ void GraphicsWindow::slot_gameObjectPropertyChanged(QtProperty*_property_, const
 			if (name != new_name)
 			{
 				m_active_object->setObjectName(new_name);
+				m_active_object->standard_item()->setText(name);
+				emit gameObjectBehavior(GAMEOBJECT_NAME_CHANGE, m_active_object);
+			}
+			else
+			{
+				m_active_object->setObjectName(name);
+				m_active_object->standard_item()->setText(name);
 				emit gameObjectBehavior(GAMEOBJECT_NAME_CHANGE, m_active_object);
 			}
 		}
