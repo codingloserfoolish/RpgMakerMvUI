@@ -4,6 +4,8 @@
 struct Vector3
 {
 	float _1, _2, _3;
+	Vector3():_1(0),_2(0),_3(0){}
+	Vector3(int x,int y,int z):_1(x),_2(y),_3(z){}
 };
 
 struct Matrix3
