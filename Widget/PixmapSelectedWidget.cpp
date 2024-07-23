@@ -1,6 +1,7 @@
 #include"PixmapSelectedWidget.h"
 #include<QHBoxLayout>
 #include<qfiledialog.h>
+#include"../Manager/PathManager.h"
 PixmapSelectedWidget::PixmapSelectedWidget(QWidget* parent):QWidget(parent),m_label(0),m_button(0)
 {
 	QHBoxLayout* layout = new QHBoxLayout(this);
@@ -21,10 +22,11 @@ void PixmapSelectedWidget::setValue(const QString&name)
 
 void PixmapSelectedWidget::slot_PixmapChanged()
 {
-	QString path = QFileDialog::getOpenFileName(this, "selected picture", QDir::currentPath()+"/img/", QString("Image File(*.png)"));
+	QString img_path = PathManager::instance()->image_path();
+	QString path = QFileDialog::getOpenFileName(this, "selected picture", img_path, QString("Image File(*.png)"));
 	if (path.isEmpty())return;
-	int last_splitter = path.lastIndexOf('/');
-	QString name = path.mid(last_splitter + 1, path.length() - last_splitter - 5);
+	int last_splitter = img_path.length();
+	QString name = path.mid(last_splitter, path.length() - last_splitter - 4);
 	this->setValue(name);
 	emit valueChanged(name);
 }

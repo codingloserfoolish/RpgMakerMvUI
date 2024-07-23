@@ -6,6 +6,7 @@
 
 MainWindow::MainWindow(QWidget* parent):QMainWindow(parent)
 {
+	this->setWindowIcon(QIcon("./icon/icon.png"));
 	this->initGraphicsWidget();
 	this->initPropertyWidget();
 	this->initObjectsTreeWidget();
@@ -22,6 +23,7 @@ MainWindow::~MainWindow()
 {
 	PixmapManager::destroy();
 	PartPropertyManager::destroy();
+	PathManager::destroy();
 }
 
 void MainWindow::initGraphicsWidget()

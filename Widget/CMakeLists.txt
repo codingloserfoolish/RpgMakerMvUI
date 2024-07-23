@@ -25,6 +25,6 @@ add_library(${PROJECT_NAME} STATIC
 "MenuExtend.cpp"
 "PixmapSelectedWidget.cpp"
 "FontLabel.cpp"
-"ObjectsTreeWidget.cpp")
+"ObjectsTreeWidget.cpp" "StartWidget.h" "StartWidget.cpp")
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Xml)

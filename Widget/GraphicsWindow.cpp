@@ -2,9 +2,12 @@
 #include<QMouseEvent>
 #include<qpainter.h>
 #include<qdebug.h>
+#include"../Manager/PathManager.h"
 
-GraphicsWindow::GraphicsWindow(QWidget* parent):QWidget(parent), m_active_object(0),m_scene(800,600)
+GraphicsWindow::GraphicsWindow(QWidget* parent):QWidget(parent),m_scene(800,600),m_active_object(&m_scene)
 {
+	m_scene.setObjectName(PathManager::instance()->sceneName());
+	m_scene.standard_item()->setText(PathManager::instance()->sceneName());
 	this->setFixedSize(800, 600);
 	this->initContextPopMenu();
 }
@@ -66,8 +69,7 @@ void GraphicsWindow::slot_gameObjectChanged(GameObject* active)
 void GraphicsWindow::slot_gameObjectPropertyChanged(QtProperty*_property_, const QVariant&value)
 {
 	const QMetaObject* metaobj = m_active_object->metaObject();
-
-	//ÃƒÃ»Ã—Ã–
+	//Ãû×Ö
 	if (_property_->propertyName() == metaobj->property(0).name())
 	{
 		QString name = value.toString();
@@ -76,7 +78,7 @@ void GraphicsWindow::slot_gameObjectPropertyChanged(QtProperty*_property_, const
 		if (name != new_name)
 		{
 			m_active_object->setObjectName(new_name);
-			m_active_object->standard_item()->setText(name);
+			m_active_object->standard_item()->setText(new_name);
 			emit gameObjectBehavior(GAMEOBJECT_NAME_CHANGE, m_active_object);
 		}
 		else
@@ -85,7 +87,7 @@ void GraphicsWindow::slot_gameObjectPropertyChanged(QtProperty*_property_, const
 			if (name != new_name)
 			{
 				m_active_object->setObjectName(new_name);
-				m_active_object->standard_item()->setText(name);
+				m_active_object->standard_item()->setText(new_name);
 				emit gameObjectBehavior(GAMEOBJECT_NAME_CHANGE, m_active_object);
 			}
 			else
@@ -97,7 +99,6 @@ void GraphicsWindow::slot_gameObjectPropertyChanged(QtProperty*_property_, const
 		}
 		return;
 	}
-
 
 	for (int i = 1; i < metaobj->propertyCount(); ++i)
 	{
@@ -124,12 +125,16 @@ void GraphicsWindow::slot_responseTriggerPopMenuEvent(int behavior, int param)
 	{
 		if (m_active_object&&m_active_object!=&m_scene)
 		{
+			m_active_object->setActive(false);
 			m_active_object->gm_parent()->removeChild(m_active_object);
+			m_active_object = &m_scene;
 		}
 	}
 	else if(behavior==CONTEXT_BEHAVIOR_CREATE)
 	{
-		m_scene.CreateObject(m_active_object, m_menuPos.x()-m_scene.pos().x(), m_menuPos.y()-m_scene.pos().y(), param);
+		GameObject* owner = m_active_object ? m_active_object : &m_scene;
+		Vector3 vec = Mat_Vec_mutiply(owner->global_getTransMatrixIn(), Vector3(m_menuPos.x(), m_menuPos.y(), 1));
+		m_scene.CreateObject(m_active_object, vec._1,vec._2, param);
 	}
 	this->update();
 }
@@ -142,14 +147,15 @@ void GraphicsWindow::slot_Save()
 
 void GraphicsWindow::slot_Load()
 {
+	m_active_object = &m_scene;
 	m_scene.clear();
 	QFile Xmlfile(this->Xmlfile_name());
 	Xmlfile.open(QIODevice::ReadOnly);
 	QDomDocument doc;
 	doc.setContent(&Xmlfile);
 	m_scene.Xml_Load_Content(doc.lastChild());
+	
 	Xmlfile.close();
-
 	this->update();
 }
 
@@ -158,6 +164,7 @@ void GraphicsWindow::paintEvent(QPaintEvent* event)
 {
 	QPainter p(this);
 	m_scene.draw(p);
+	display_active_frame(p);
 	p.end();
 }
 
@@ -171,34 +178,25 @@ void GraphicsWindow::mousePressEvent(QMouseEvent* event)
 		bool is_emit = false;
 		if (temp == 0)
 		{
-			if (m_active_object)
+			if (m_active_object!=&m_scene)
 			{
 				m_active_object->setActive(false);
 				signal_type = GAMEOBJECT_DEACTIVE;
 				value = 0;
 				is_emit = true;
+				m_active_object = &m_scene;
+				m_active_object->setActive(true);
+				this->update();
 			}
-			m_active_object = temp;
 			if (is_emit)emit gameObjectBehavior(signal_type, value);
 		}
 		else if (temp != m_active_object)
 		{
-			if (!m_active_object)
-			{
-				signal_type = GAMEOBJECT_ACTIVE;
-				value = temp;
-				is_emit = true;
-			}
-			else
-			{
-				m_active_object->setActive(false);
-				signal_type = GAMEOBJECT_CHANGE;
-				value = temp;
-				is_emit = true;
-			}
+			m_active_object->setActive(false);
 			m_active_object = temp;
 			m_active_object->setActive(true);
-			if(is_emit)emit gameObjectBehavior(signal_type, value);
+			this->update();
+			emit gameObjectBehavior(GAMEOBJECT_CHANGE, temp);
 		}
 	}
 }
@@ -213,5 +211,17 @@ void GraphicsWindow::mouseMoveEvent(QMouseEvent* event)
 		m_active_object->translate(point._1 - m_diff.x(), point._2 - m_diff.y());
 		update();
 		emit gameObjectBehavior(GAMEOBJECT_MOVE, m_active_object);
+	}
+}
+
+void GraphicsWindow::display_active_frame(QPainter& p)
+{
+	if (m_active_object!=&m_scene)
+	{
+		p.setPen(Qt::red);
+		int width = m_active_object->canvas_width();
+		int height = m_active_object->canvas_height();
+		Vector3 g_vec = Mat_Vec_mutiply(m_active_object->global_getTransMatrixOut(), Vector3(0, 0, 1));
+		p.drawRect(g_vec._1 - width / 2, g_vec._2 - height / 2, width, height);
 	}
 }

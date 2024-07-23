@@ -9,6 +9,7 @@
 #include"MenuExtend.h"
 
 #include"../RpgObject/RpgScene.h"
+#include"../Manager/PathManager.h"
 class GraphicsWindow :public QWidget
 {
 	Q_OBJECT
@@ -19,14 +20,13 @@ public:
 
 	GameObject* root() { return &m_scene; }
 
-	QString Jsfile_name() { return "./result/"+m_scene.objectName() + ".txt"; }
-	QString Xmlfile_name() { return "./result/" + m_scene.objectName() + ".xml"; }
+	QString Jsfile_name() { return PathManager::instance()->plugin_path()+ PathManager::instance()->sceneName()+".js"; }
+	QString Xmlfile_name() { return PathManager::instance()->save_path() + PathManager::instance()->sceneName() + ".xml"; }
 
 	void generateJs();
 	void saveXml();
 signals:
 	void gameObjectBehavior(int behivor,QObject*obj);
-	
 public slots:
 	void slot_mousePopMenuEvent(const QPoint& pos);
 	void slot_gameObjectChanged(GameObject*active);
@@ -40,6 +40,7 @@ protected:
 	virtual void mousePressEvent(QMouseEvent* event)override;
 	virtual void mouseMoveEvent(QMouseEvent* event)override;
 
+	void display_active_frame(QPainter& p);
 	QPointF m_diff;
 	GameObject* m_active_object;
 	RpgScene m_scene;

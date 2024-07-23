@@ -7,6 +7,7 @@
 
 #include"../Manager/PixmapManager.h"
 #include"../Manager/PartPropertyManager.h"
+#include"../Manager/PathManager.h"
 #include"GraphicsWindow.h"
 #include"ObjectsTreeWidget.h"
 
