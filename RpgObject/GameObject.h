@@ -13,7 +13,7 @@ class GameObject;
 struct GameObject_Data
 {
 	GameObject* _gameObject;
-	GameObject_Data() {};
+	GameObject_Data():_gameObject(0) {};
 	GameObject_Data(GameObject* self) { _gameObject = self; }
 	GameObject* gameObject()const { return _gameObject; }
 };
@@ -51,8 +51,8 @@ public:
 	* 拾取物体,递归实现
 	*/
 	GameObject* pickup(float x, float y,QPointF*diff=0);
-	Matrix3 global_getTransMatrixIn();
-
+	Matrix3 global_getTransMatrixIn();//外部点转换为本物体的坐标
+	Matrix3 global_getTransMatrixOut();//本物体坐标转换为最外的窗口坐标
 
 	/*
 	* 添加移除

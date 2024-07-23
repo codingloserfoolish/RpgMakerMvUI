@@ -2,7 +2,7 @@
 
 RpgWindow::RpgWindow(float width, float height, QObject* parent):GameObject(width,height,parent)
 {
-	m_system_window=PixmapManager::instance()->loadPixmap("Window");
+	m_system_window=PixmapManager::instance()->loadPixmap("system/Window");
 }
 
 void RpgWindow::draw_self(QPainter& p)
@@ -68,6 +68,7 @@ QDomNode RpgWindow::Xml_LoadData(QDomNode& self)
 	QDomElement Window_Node = self.toElement();
 	//name
 	this->setObjectName(Window_Node.attribute("name"));
+	m_bind_standardItem->setText(this->objectName());
 	this->m_if_check_message= Window_Node.attribute("checkMessage").toInt();
 	//Transform
 	QDomElement c_transform = Window_Node.firstChildElement();

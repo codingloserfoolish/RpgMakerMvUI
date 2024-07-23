@@ -22,13 +22,13 @@ public:
 	Q_INVOKABLE void S_FONT_STYLE(QFont& font) { m_label.setFontWithAdjustSize(font); resize_canvas(m_label.size());}
 
 	Q_INVOKABLE QColor& R_OUTLINECOLOR() { return m_label.outline().color(); }
-	Q_INVOKABLE void S_OUTLINECOLOR(QColor&color) { return m_label.setOutLineColor(color); }
+	Q_INVOKABLE void S_OUTLINECOLOR(QColor&color) { m_label.setOutLineColor(color); }
 
 	Q_INVOKABLE QColor& R_CONTENTCOLOR() { return m_label.contentColor(); }
-	Q_INVOKABLE void S_CONTENTCOLOR(QColor& color) {return m_label.setContentColor(color); }
+	Q_INVOKABLE void S_CONTENTCOLOR(QColor& color) {m_label.setContentColor(color); }
 
 	Q_INVOKABLE int R_OUTLINEWIDTH() { return m_label.outline().width(); }
-	Q_INVOKABLE void S_OUTLINEWIDTH(int width) { return m_label.setOutLineWidth(width); }
+	Q_INVOKABLE void S_OUTLINEWIDTH(int width) { m_label.setOutLineWidth(width); }
 
 
 	RpgText(QObject* parent = nullptr);

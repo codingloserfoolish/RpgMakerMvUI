@@ -50,7 +50,10 @@ void RpgSprite::draw_self(QPainter& p)
 
 QString RpgSprite::Js_NewObject()
 {
-	return QString("this.%1=new hjdd.SpriteEx(ImageManager.loadPicture('%2'));\n").arg(this->objectName()).arg(this->m_bitmap->_name);
+	int index = this->m_bitmap->_name.lastIndexOf('/');
+	QString floder = "img/" + this->m_bitmap->_name.left(index+1);
+	QString name = this->m_bitmap->_name.right(this->m_bitmap->_name.length()-index-1);
+	return QString("this.%1=new hjdd.SpriteEx(ImageManager.loadBitmap('%2','%3',0,true));\n").arg(this->objectName()).arg(floder).arg(name);
 }
 
 QString RpgSprite::Js_AttributeSet()
@@ -108,6 +111,7 @@ QDomNode RpgSprite::Xml_LoadData(QDomNode& self)
 	QDomElement Sprite_Node = self.toElement();
 	//name
 	this->setObjectName(Sprite_Node.attribute("name"));
+	m_bind_standardItem->setText(this->objectName());
 	this->m_if_check_message = Sprite_Node.attribute("checkMessage").toInt();
 	//Transform
 	QDomElement c_transform = Sprite_Node.firstChildElement();

@@ -23,12 +23,12 @@ GameObject::GameObject(int canvas_w, int canvas_h, QObject* parent)
 
 GameObject::~GameObject()
 {
-	for (GameObject*& child : m_children){delete child;child = 0;}
+	for (GameObject*& child : m_children) { m_bind_standardItem->removeRow(child->standard_item()->row()); delete child; child = 0; }
 }
 
 void GameObject::clear()
 {
-	for (GameObject*& child : m_children) { delete child;}
+	for (GameObject*& child : m_children) { m_bind_standardItem->removeRow(child->standard_item()->row()); delete child;}
 	m_children.clear();
 }
 
@@ -79,6 +79,20 @@ Matrix3 GameObject::global_getTransMatrixIn()
 	{
 		right = parent->getTransMatrixIn();
 		mat = Mat_mutiply(mat, right);
+		parent = parent->m_parent;
+	}
+	return mat;
+}
+
+Matrix3 GameObject::global_getTransMatrixOut()
+{
+	Matrix3 mat = getTransMatrixOut();
+	Matrix3 left;
+	GameObject* parent = m_parent;
+	while (parent)
+	{
+		left = parent->getTransMatrixOut();
+		mat = Mat_mutiply(left,mat);
 		parent = parent->m_parent;
 	}
 	return mat;

@@ -12,14 +12,14 @@ RpgScene::RpgScene(int width, int height, QObject* parent):
 void RpgScene::CreateObject(GameObject* parent, int x, int y, int type)
 {
 	GameObject* item = 0;
-	GameObject* owner = parent ? parent : this;
+	//GameObject* owner = parent ? parent : this;
 	if (type == 0) { item = new RpgWindow(100, 100); }
 	else if (type == 1) { item = new RpgSprite; }
 	else if (type == 2) { item = new RpgText; }
 	if (item)
 	{
 		item->translate(x, y);
-		owner->addChild(item);
+		parent->addChild(item);
 	}
 }
 
@@ -98,6 +98,7 @@ QDomElement RpgScene::Xml_SaveData(QDomDocument& doc, QDomElement& parent_node)
 
 QDomNode RpgScene::Xml_LoadData(QDomNode&self)
 {
+	this->_object_name_index = 1;
 	QDomElement Scene_Node = self.toElement();
 	//background
 	m_background = PixmapManager::instance()->loadPixmap(Scene_Node.attribute("background"));
