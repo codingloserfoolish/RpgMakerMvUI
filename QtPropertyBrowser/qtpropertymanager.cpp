@@ -5837,6 +5837,7 @@ QIcon QtFontPropertyManager::valueIcon(const QtProperty *property) const
 */
 void QtFontPropertyManager::setValue(QtProperty *property, const QFont &val)
 {
+    QFont o_font = val;//真是急了
     const QtFontPropertyManagerPrivate::PropertyValueMap::iterator it = d_ptr->m_values.find(property);
     if (it == d_ptr->m_values.end())
         return;
@@ -5862,7 +5863,7 @@ void QtFontPropertyManager::setValue(QtProperty *property, const QFont &val)
     d_ptr->m_settingValue = settingValue;
 
     emit propertyChanged(property);
-    emit valueChanged(property, val);
+    emit valueChanged(property, o_font);
 }
 
 /*!
@@ -6174,6 +6175,7 @@ QIcon QtColorPropertyManager::valueIcon(const QtProperty *property) const
 */
 void QtColorPropertyManager::setValue(QtProperty *property, const QColor &val)
 {
+    QColor o_color = val;//真是急了
     const QtColorPropertyManagerPrivate::PropertyValueMap::iterator it = d_ptr->m_values.find(property);
     if (it == d_ptr->m_values.end())
         return;
@@ -6189,7 +6191,7 @@ void QtColorPropertyManager::setValue(QtProperty *property, const QColor &val)
     d_ptr->m_intPropertyManager->setValue(d_ptr->m_propertyToA[property], val.alpha());
 
     emit propertyChanged(property);
-    emit valueChanged(property, val);
+    emit valueChanged(property, o_color);
 }
 
 /*!
