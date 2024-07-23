@@ -5,7 +5,7 @@
 #include<qlist.h>
 #include<qvariant.h>
 #define MAX_SIZE 50
-const QString img_path = "./img/";
+
 
 struct Pixmap
 {

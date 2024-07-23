@@ -14,9 +14,10 @@ add_library(${PROJECT_NAME} STATIC
 "PixmapNode.h"
 "PixmapManager.h"
 "PartPropertyManager.h"
+ "PathManager.h"
 
 "PixmapManager.cpp"
 "PartPropertyManager.cpp"
- )
+ "PathManager.cpp")
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
