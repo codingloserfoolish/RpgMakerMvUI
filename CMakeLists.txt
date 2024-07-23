@@ -9,9 +9,11 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
+set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/RPGMakerUI.rc")
+
 find_package(Qt5 REQUIRED Widgets)
 
-add_executable(${PROJECT_NAME} main.cpp ${RPG_SOURCES})
+add_executable(${PROJECT_NAME} main.cpp ${RPG_SOURCES} ${APP_ICON_RESOURCE_WINDOWS})
 
 add_subdirectory(QtPropertyBrowser)
 add_subdirectory(Manager)
