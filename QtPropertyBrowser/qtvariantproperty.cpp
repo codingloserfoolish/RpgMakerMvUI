@@ -1578,15 +1578,15 @@ int QtVariantPropertyManager::attributeType(int propertyType, const QString &att
 */
 void QtVariantPropertyManager::setValue(QtProperty *property, const QVariant &val)
 {
-    int propType = val.userType();
-    if (!propType)
-        return;
+    /*int propType = val.userType();*/
+    /*if (!propType)
+        return;*/
 
-    int valType = valueType(property);
+   /* int valType = valueType(property);*/
 
-    if (propType != valType && !val.canConvert(static_cast<QVariant::Type>(valType)))
-        return;
-
+  /*  if (propType != valType && !val.canConvert(static_cast<QVariant::Type>(valType)))
+        return;*/
+   
     QtProperty *internProp = propertyToWrappedProperty()->value(property, 0);
     if (internProp == 0)
         return;

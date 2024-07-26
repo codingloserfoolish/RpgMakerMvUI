@@ -6467,7 +6467,6 @@ PixmapPropertyManager::~PixmapPropertyManager()
     clear();
 }
 
-
 PixmapNode PixmapPropertyManager::value(const QtProperty* property) const
 {
     return getValue<PixmapNode>(d_ptr->m_values, property);
