@@ -28,7 +28,7 @@ void PixmapManager::destroy()
 Pixmap* PixmapManager::loadPixmap(const QString& name)
 {
 	QString img_path = PathManager::instance()->image_path();
-	if (name.isEmpty())return 0;
+	if (name.isEmpty()||name==" ")return 0;
 	Pixmap* temp = m_head;
 	Pixmap* before_before = 0;
 	Pixmap* before = 0;

@@ -1,6 +1,29 @@
 #ifndef PATHMANAGER_H_
 #define PATHMANAGER_H_
 #include<qstring.h>
+#include<qdatetime.h>
+#include<qfile.h>
+struct PathSaveNode
+{
+	QString _scene_name;
+	QString _path;
+	QString _time;
+};
+
+class HistoryList
+{
+public:
+	HistoryList(const QString&file);
+	~HistoryList();
+	void push_back(PathSaveNode* node);
+	PathSaveNode* check(PathSaveNode* node);
+	bool exist(QString& sceneName, QString& path);
+	void remove(QString& sceneName, QString& path);
+protected:
+	QFile m_file;
+	std::vector<PathSaveNode*> m_list;
+};
+
 class PathManager
 {
 public:
@@ -14,11 +37,14 @@ public:
 	QString image_path()const { return m_projectPath + "img/"; }
 	QString plugin_path()const { return m_projectPath + "js/plugins/"; }
 	QString save_path()const { return m_projectPath + "save/"; }
+	QString& project_path() { return m_projectPath; }
+	QString& created_time() { return m_timeStr; }
 private:
 	PathManager() {};
 	static PathManager* m_instance;
 	QString m_projectPath;
 	QString m_sceneName;
+	QString m_timeStr;
 };
 
 #endif // !PATHMANAGER_H_
