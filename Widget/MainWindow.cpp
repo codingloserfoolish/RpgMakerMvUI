@@ -11,6 +11,9 @@ MainWindow::MainWindow(QWidget* parent):QMainWindow(parent)
 	this->initPropertyWidget();
 	this->initObjectsTreeWidget();
 	this->initMenuBar();
+
+	connect(this, &MainWindow::reload, m_graphicsWidget, &GraphicsWindow::slot_Load);
+
 	connect(m_graphicsWidget, &GraphicsWindow::gameObjectBehavior, this, &MainWindow::slot_gameObjectBehivor);
 	connect(m_propertyManager, &QtVariantPropertyManager::valueChanged, m_graphicsWidget, &GraphicsWindow::slot_gameObjectPropertyChanged);
 
@@ -23,7 +26,6 @@ MainWindow::~MainWindow()
 {
 	PixmapManager::destroy();
 	PartPropertyManager::destroy();
-	PathManager::destroy();
 }
 
 void MainWindow::initGraphicsWidget()

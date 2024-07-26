@@ -46,6 +46,16 @@ void GraphicsWindow::saveXml()
 	Xmlfile.close();
 }
 
+void GraphicsWindow::savePath()
+{
+	HistoryList list("./history/history.txt");
+	PathSaveNode* node = new PathSaveNode;
+	node->_scene_name = PathManager::instance()->sceneName();
+	node->_path = PathManager::instance()->project_path();
+	node->_time = PathManager::instance()->created_time();
+	list.push_back(node);
+}
+
 void GraphicsWindow::slot_mousePopMenuEvent(const QPoint& pos)
 {
 	m_menuPos = pos;
@@ -143,6 +153,7 @@ void GraphicsWindow::slot_Save()
 {
 	this->generateJs();
 	this->saveXml();
+	this->savePath();
 }
 
 void GraphicsWindow::slot_Load()
@@ -222,6 +233,9 @@ void GraphicsWindow::display_active_frame(QPainter& p)
 		int width = m_active_object->canvas_width();
 		int height = m_active_object->canvas_height();
 		Vector3 g_vec = Mat_Vec_mutiply(m_active_object->global_getTransMatrixOut(), Vector3(0, 0, 1));
-		p.drawRect(g_vec._1 - width / 2, g_vec._2 - height / 2, width, height);
+
+		p.translate(g_vec._1, g_vec._2);
+		p.rotate(m_active_object->global_angle());
+		p.drawRect(- width / 2,- height / 2, width, height);
 	}
 }

@@ -45,6 +45,12 @@ void StartWidget::slot_ensure()
 	if (scene_name.isEmpty()) { QMessageBox::information(this, "warning", "scene needs a name!"); return; }
 	QString path = m_projectName->text();
 	if(path.isEmpty()){ QMessageBox::information(this, "warning", "path can't be empty!"); return; }
+	scene_name.replace(" ", "_");
+
+	path = path.left(path.lastIndexOf('/') + 1);
+
+	HistoryList history("./history/history.txt");
+	if (history.exist(scene_name, path)) { QMessageBox::information(this, "warning", "this scene has been existed"); return; }
 	PathManager::instance()->open(path);
 	PathManager::instance()->setSceneName(scene_name);
 	this->accept();

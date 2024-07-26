@@ -18,6 +18,9 @@ add_library(${PROJECT_NAME} STATIC
 "PixmapSelectedWidget.h"
 "FontLabel.h"
  "ObjectsTreeWidget.h"
+ "StartWidget.h"
+ "PreStartWidget.h"
+ "LoadWidget.h" 
 
 "GraphicsWindow.cpp"
 "LineEditorEnterWidget.cpp"
@@ -25,6 +28,9 @@ add_library(${PROJECT_NAME} STATIC
 "MenuExtend.cpp"
 "PixmapSelectedWidget.cpp"
 "FontLabel.cpp"
-"ObjectsTreeWidget.cpp" "StartWidget.h" "StartWidget.cpp")
+"ObjectsTreeWidget.cpp" 
+"StartWidget.cpp" 
+"PreStartWidget.cpp"
+"LoadWidget.cpp")
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Xml)

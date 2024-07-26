@@ -25,6 +25,7 @@ public:
 
 	void generateJs();
 	void saveXml();
+	void savePath();
 signals:
 	void gameObjectBehavior(int behivor,QObject*obj);
 public slots:

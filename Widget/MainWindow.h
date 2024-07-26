@@ -21,6 +21,9 @@ public:
 	void initPropertyWidget();
 	void initObjectsTreeWidget();
 	void initMenuBar();
+	void emit_load() { emit reload(); }
+signals:
+	void reload();
 public slots:
 	void slot_gameObjectBehivor(int behivor, QObject* obj);
 private:
