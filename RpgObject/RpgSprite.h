@@ -13,7 +13,7 @@ public:
 	Q_INVOKABLE bool R_IF_CHECK_MESSAGE() { return m_if_check_message; }
 	Q_INVOKABLE void S_IF_CHECK_MESSAGE(bool value) { m_if_check_message = value; }
 
-	Q_INVOKABLE PixmapNode R_BITMAP() { if (m_bitmap) { m_send._name = m_bitmap->_name; return m_send; }return PixmapNode(); }
+	Q_INVOKABLE PixmapNode R_BITMAP() { if (m_bitmap) { m_send._name = m_bitmap->_name; return m_send; }return PixmapNode();}
 	Q_INVOKABLE void S_BITMAP(PixmapNode& name) { this->setBitmap(name._name); }
 
 	Q_INVOKABLE QRect& R_FRAME_RECT() { return m_frame_rect; }
@@ -21,6 +21,7 @@ public:
 
 	RpgSprite(QObject* parent = nullptr);
 	void setBitmap(QString&name);
+	virtual int gm_type()const override { return 1; }
 protected:
 	int clamp(int value,int min,int max);
 

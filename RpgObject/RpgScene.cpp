@@ -64,7 +64,14 @@ QString RpgScene::Js_NewObject()
 
 QString RpgScene::Js_AttributeSet()
 {
-	QString background = m_background ? QString("this.createBackground('%1');\n").arg(m_background->_name) : "";
+	QString background = "";
+	if (m_background)
+	{
+		int index = this->m_background->_name.lastIndexOf('/');
+		QString floder = "img/" + this->m_background->_name.left(index + 1);
+		QString name = this->m_background->_name.right(this->m_background->_name.length() - index - 1);
+		background = QString("this.createBackground('%1','%2');\n").arg(floder).arg(name);
+	}
 	QString geometry = QString("this.setGeometry(%1,%2,%3,%4);\n").arg(m_x+8).arg(m_y+12).arg(m_canvas_width+16).arg(m_canvas_height+24);
 	QString rotation = QString("this.rotate(%1);\n").arg(m_angle * PI / 180.0f);
 	return  background+geometry + rotation;

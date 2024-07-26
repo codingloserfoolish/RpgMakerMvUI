@@ -12,6 +12,7 @@ public:
 	Q_INVOKABLE void S_IF_CHECK_MESSAGE(bool value) { m_if_check_message = value; }
 
 	explicit RpgWindow(float width,float height,QObject*parent=nullptr);
+	virtual int gm_type()const override { return 0; }
 protected:
 
 	virtual void draw_self(QPainter& p)override;

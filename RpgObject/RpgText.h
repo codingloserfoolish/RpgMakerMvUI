@@ -34,6 +34,7 @@ public:
 	RpgText(QObject* parent = nullptr);
 
 	void resize_canvas(QSize& size) { m_canvas_width = size.width(); m_canvas_height = size.height(); }
+	virtual int gm_type()const override { return 2; }
 protected:
 	virtual void draw_self(QPainter& p)override;
 	virtual QString Js_NewObject()override;

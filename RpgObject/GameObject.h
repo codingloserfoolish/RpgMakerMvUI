@@ -53,7 +53,7 @@ public:
 	GameObject* pickup(float x, float y,QPointF*diff=0);
 	Matrix3 global_getTransMatrixIn();//外部点转换为本物体的坐标
 	Matrix3 global_getTransMatrixOut();//本物体坐标转换为最外的窗口坐标
-
+	float global_angle();
 	/*
 	* 添加移除
 	*/
@@ -93,6 +93,7 @@ public:
 	size_t childrenCount()const { return m_children.size();}
 	GameObject* at(int index) { return m_children.at(index); }
 	GameObject* gm_parent()const { return m_parent; }
+	virtual int gm_type()const { return -1; }//-1 scene,0 window,1 sprite,2 text 
 protected:
 
 	virtual void draw_self(QPainter& p)=0;

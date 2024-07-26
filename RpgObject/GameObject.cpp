@@ -20,15 +20,20 @@ GameObject::GameObject(int canvas_w, int canvas_h, QObject* parent)
 	m_bind_standardItem->setEditable(false);
 	m_bind_standardItem->setData(QVariant::fromValue(GameObject_Data(this)), GAMEOBJECT_ROLE);
 }
-
+#include<qdebug.h>
 GameObject::~GameObject()
 {
-	for (GameObject*& child : m_children) { m_bind_standardItem->removeRow(child->standard_item()->row()); delete child; child = 0; }
+	for (GameObject*& child : m_children) { 
+		delete child;
+		child = 0; 
+	}
+	if(m_parent)
+	m_parent->standard_item()->removeRow(m_bind_standardItem->row());
 }
 
 void GameObject::clear()
 {
-	for (GameObject*& child : m_children) { m_bind_standardItem->removeRow(child->standard_item()->row()); delete child;}
+	for (GameObject*& child : m_children) { delete child;}
 	m_children.clear();
 }
 
@@ -98,6 +103,18 @@ Matrix3 GameObject::global_getTransMatrixOut()
 	return mat;
 }
 
+float GameObject::global_angle()
+{
+	float result=m_angle;
+	GameObject* parent = m_parent;
+	while (parent)
+	{
+		result += parent->m_angle;
+		parent = parent->gm_parent();
+	}
+	return result;
+}
+
 void GameObject::addChild(GameObject* object)
 {
 	object->m_parent = this;
@@ -111,7 +128,6 @@ void GameObject::removeChild(GameObject* object)
 	{
 		if (*it == object)
 		{
-			this->m_bind_standardItem->removeRow(object->standard_item()->row());
 			m_children.erase(it);
 			delete object;
 			return;

@@ -68,7 +68,7 @@ QString RpgSprite::Js_AttributeSet()
 	{
 		check_message = var + QString("if_check_message=true;\n");
 	}
-	return  geometry + rotation + s_parent + check_message;
+	return  geometry + frameRect + rotation + s_parent + check_message;
 }
 
 QDomElement RpgSprite::Xml_SaveData(QDomDocument& doc, QDomElement& parent_node)
