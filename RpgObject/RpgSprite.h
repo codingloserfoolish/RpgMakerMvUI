@@ -22,6 +22,7 @@ public:
 	RpgSprite(QObject* parent = nullptr);
 	void setBitmap(QString&name);
 	virtual int gm_type()const override { return 1; }
+	virtual RpgObjectEditorBase* createEditor()override;
 protected:
 	int clamp(int value,int min,int max);
 

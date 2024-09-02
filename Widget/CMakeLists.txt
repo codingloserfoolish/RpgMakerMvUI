@@ -31,6 +31,8 @@ add_library(${PROJECT_NAME} STATIC
 "ObjectsTreeWidget.cpp" 
 "StartWidget.cpp" 
 "PreStartWidget.cpp"
-"LoadWidget.cpp")
+"LoadWidget.cpp"
+
+)
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Xml)

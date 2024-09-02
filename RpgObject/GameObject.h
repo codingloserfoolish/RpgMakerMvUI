@@ -10,6 +10,7 @@
 #include"../MyTransform/Transform2D.h"
 
 class GameObject;
+class RpgObjectEditorBase;
 struct GameObject_Data
 {
 	GameObject* _gameObject;
@@ -18,7 +19,6 @@ struct GameObject_Data
 	GameObject* gameObject()const { return _gameObject; }
 };
 Q_DECLARE_METATYPE(GameObject_Data)
-
 #define GAMEOBJECT_ROLE Qt::UserRole+1
 
 
@@ -93,16 +93,19 @@ public:
 	size_t childrenCount()const { return m_children.size();}
 	GameObject* at(int index) { return m_children.at(index); }
 	GameObject* gm_parent()const { return m_parent; }
-	virtual int gm_type()const { return -1; }//-1 scene,0 window,1 sprite,2 text 
+
+	virtual RpgObjectEditorBase* createEditor() = 0;
+	virtual int gm_type()const { return -1; }//-1 scene,0 window,1 sprite,2 text,3 commandwindow
 protected:
+	virtual void on_destroy() {};
 
 	virtual void draw_self(QPainter& p)=0;
 	virtual QString Js_NewObject()=0;
 	virtual QString Js_AttributeSet() = 0;
+	virtual void Js_ExtraData(QTextStream&stream) {}
 
 	virtual QDomElement Xml_SaveData(QDomDocument& doc,QDomElement& parent_node)=0;
 	virtual QDomNode Xml_LoadData(QDomNode& self)=0;
-
 	bool m_active;
 	int m_canvas_width;
 	int m_canvas_height;

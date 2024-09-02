@@ -2,6 +2,7 @@
 #include"RpgWindowBase.h"
 #include"RpgSprite.h"
 #include"RpgText.h"
+#include"RpgCommandWindow.h"
 GameObject* RpgObjectFactory::create(QString&type)
 {
 	GameObject* result = 0;
@@ -16,6 +17,10 @@ GameObject* RpgObjectFactory::create(QString&type)
 	else if (type == "RpgText")
 	{
 		result = new RpgText;
+	}
+	else if (type == "RpgCommandWindow")
+	{
+		result = new RpgCommandWindow;
 	}
 	return result;
 }

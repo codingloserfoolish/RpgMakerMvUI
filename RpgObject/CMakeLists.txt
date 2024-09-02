@@ -17,6 +17,7 @@ add_library(${PROJECT_NAME} STATIC
 "RpgText.h"
 "RpgWindowBase.h"
 "RpgObjectFactory.h"
+"RpgCommandWindow.h"
 
 "GameObject.cpp"
 "RpgScene.cpp"
@@ -24,7 +25,7 @@ add_library(${PROJECT_NAME} STATIC
 "RpgText.cpp"
 "RpgWindowBase.cpp"
 "RpgObjectFactory.cpp"
- )
+"RpgCommandWindow.cpp")
 
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Xml)

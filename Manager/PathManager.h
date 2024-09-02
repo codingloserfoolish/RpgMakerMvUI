@@ -35,8 +35,10 @@ public:
 	void setSceneName(QString& name) { m_sceneName = name; }
 	QString& sceneName() { return m_sceneName; }
 	QString image_path()const { return m_projectPath + "img/"; }
+	QString data_path()const { return m_projectPath + "data/"; }
 	QString plugin_path()const { return m_projectPath + "js/plugins/"; }
 	QString save_path()const { return m_projectPath + "save/"; }
+	QString font_path()const { return m_projectPath + "fonts/mplus-1m-regular.ttf"; }
 	QString& project_path() { return m_projectPath; }
 	QString& created_time() { return m_timeStr; }
 private:

@@ -3,7 +3,14 @@
 
 PixmapManager*PixmapManager::m_instance = 0;
 
-PixmapManager::PixmapManager() :m_head(0), m_last(0), m_size(0), m_empty{ "",QPixmap(100,100),0 } { m_empty._pixmap.fill(Qt::black); }
+PixmapManager::PixmapManager() 
+	:m_winskin(PathManager::instance()->image_path() + "system/Window.png"), 
+	m_tempIVPixmap("./icon/IconVariable.png"),
+	m_head(0),
+	m_last(0),
+	m_size(0),
+	m_empty{"",QPixmap(100,100),0}
+{ m_empty._pixmap.fill(Qt::black); }
 PixmapManager::~PixmapManager()
 {
 	if(m_head)

@@ -20,6 +20,11 @@ void RpgSprite::setBitmap(QString& name)
 	}
 }
 
+RpgObjectEditorBase* RpgSprite::createEditor()
+{
+	return 0;
+}
+
 int RpgSprite::clamp(int value, int min, int max)
 {
 	if (min > value)return min;

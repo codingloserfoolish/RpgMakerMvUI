@@ -10,6 +10,7 @@
 
 #include"../RpgObject/RpgScene.h"
 #include"../Manager/PathManager.h"
+#include"../RpgObjectEditor/RpgObjectEditorLaunch.h"
 class GraphicsWindow :public QWidget
 {
 	Q_OBJECT
@@ -40,13 +41,14 @@ protected:
 	virtual void paintEvent(QPaintEvent* event)override;
 	virtual void mousePressEvent(QMouseEvent* event)override;
 	virtual void mouseMoveEvent(QMouseEvent* event)override;
-
+	virtual void closeEvent(QCloseEvent*)override;
 	void display_active_frame(QPainter& p);
 	QPointF m_diff;
 	GameObject* m_active_object;
 	RpgScene m_scene;
 private:
 	ContextPopMenu* m_pCtMenu;
+	RpgObjectEditorLaunch m_rpgobjectEditor;
 	QPoint m_menuPos;
 };
 

@@ -1,50 +1,52 @@
 #ifndef RPGTEXT_H_
 #define RPGTEXT_H_
 #include"GameObject.h"
-#include"../Widget/FontLabel.h"
-#include<qdebug.h>
-#define RGB24(color) color.red()<<16|color.green()<<8|color.blue()
+#include"../Manager/PixmapManager.h"
+#define COLOR_BITMAP PixmapManager::instance()->colorBitmap()
+#define IVPIXMAP PixmapManager::instance()->IVPixmap()
 
 class RpgText :public GameObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString text READ R_TEXT WRITE S_TEXT)
-	Q_PROPERTY(QFont fontStyle READ R_FONT_STYLE WRITE S_FONT_STYLE)
-	Q_PROPERTY(QColor OutLineColor READ R_OUTLINECOLOR WRITE S_OUTLINECOLOR)
-	Q_PROPERTY(QColor ContentColor READ R_CONTENTCOLOR WRITE S_CONTENTCOLOR)
-	Q_PROPERTY(int OutLineWidth READ R_OUTLINEWIDTH WRITE S_OUTLINEWIDTH)
-	
+	Q_PROPERTY(QColor outlineColor READ R_OUTLINECOLOR WRITE W_OUTLINECOLOR)
+	Q_PROPERTY(int outlineWidth READ R_OUTLINEWIDTH WRITE W_OUTLINEWIDTH)
+	Q_PROPERTY(bool italics READ R_ITALICS WRITE W_ITALICS)
 public:
-	Q_INVOKABLE QString& R_TEXT() { return m_text; }
-	Q_INVOKABLE void S_TEXT(QString& text) { m_text = text; m_label.setContentTextWithAdjustSize(text); resize_canvas(m_label.size()); }
+	Q_INVOKABLE QColor R_OUTLINECOLOR() { return m_outlinePen.color(); }
+	Q_INVOKABLE void W_OUTLINECOLOR(QColor color) { m_outlinePen.setColor(color); }
 
-	Q_INVOKABLE QFont& R_FONT_STYLE() { return m_label.font(); }
-	Q_INVOKABLE void S_FONT_STYLE(QFont& font) { m_label.setFontWithAdjustSize(font); resize_canvas(m_label.size());}
+	Q_INVOKABLE int R_OUTLINEWIDTH() { return m_outlinePen.width(); }
+	Q_INVOKABLE void W_OUTLINEWIDTH(int width) { m_outlinePen.setWidth(width); }
 
-	Q_INVOKABLE QColor& R_OUTLINECOLOR() { return m_label.outline().color(); }
-	Q_INVOKABLE void S_OUTLINECOLOR(QColor&color) { m_label.setOutLineColor(color); }
+	Q_INVOKABLE bool R_ITALICS() { return m_isItalics; }
+	Q_INVOKABLE void W_ITALICS(bool value) { m_isItalics = value; }
 
-	Q_INVOKABLE QColor& R_CONTENTCOLOR() { return m_label.contentColor(); }
-	Q_INVOKABLE void S_CONTENTCOLOR(QColor& color) {m_label.setContentColor(color); }
-
-	Q_INVOKABLE int R_OUTLINEWIDTH() { return m_label.outline().width(); }
-	Q_INVOKABLE void S_OUTLINEWIDTH(int width) { m_label.setOutLineWidth(width); }
-
-
-	RpgText(QObject* parent = nullptr);
-
-	void resize_canvas(QSize& size) { m_canvas_width = size.width(); m_canvas_height = size.height(); }
+	RpgText(QObject*parent=nullptr);
+	void setText(QString&text);
+	QString& text() { return m_text; }
 	virtual int gm_type()const override { return 2; }
+	virtual RpgObjectEditorBase* createEditor()override;
 protected:
-	virtual void draw_self(QPainter& p)override;
-	virtual QString Js_NewObject()override;
-	virtual QString Js_AttributeSet()override;
+	virtual void draw_self(QPainter& p);
+	virtual QString Js_NewObject();
+	virtual QString Js_AttributeSet();
 
-	virtual QDomElement Xml_SaveData(QDomDocument& doc, QDomElement& parent_node)override;
-	virtual QDomNode Xml_LoadData(QDomNode& self)override;
-
-	FontLabel m_label;
+	virtual QDomElement Xml_SaveData(QDomDocument& doc, QDomElement& parent_node);
+	virtual QDomNode Xml_LoadData(QDomNode& self);
+private:
+	bool isIcon(int* index,int*whichIcon);
+	bool isVariable(int* index);
+	bool isColor(int* index, int* whichColor);
+	bool isFontSizeScaled(int *index,int*isNegative);
+	void drawIcon(QPainter&p,int which,int x,int y);
+	int drawSpecialText(QPainter&p,QString& text, int x, int y);
+	int textWidth(QPainter&p,QString& text);
+	int textMaxHeight(QPainter& p);
+	void initPainter(QPainter& p);
 	QString m_text;
+
+	QPen m_outlinePen;
+	bool m_isItalics;
 };
 
 #endif // !RPGTEXT_H_

@@ -3,6 +3,7 @@
 #include"GameObject.h"
 #include"../Manager/PixmapNode.h"
 #include"../Manager/PixmapManager.h"
+#include"../Manager/JsImageReserveContainer.h"
 class RpgScene :public GameObject
 {
 	Q_OBJECT
@@ -15,6 +16,8 @@ public:
 	void CreateObject(GameObject* parent, int x, int y, int type);
 
 	virtual void Js_Context(QTextStream&)override;
+
+	virtual RpgObjectEditorBase* createEditor()override { return 0; }
 protected:
 	virtual void draw_self(QPainter& p)override;
 	virtual QString Js_NewObject()override;

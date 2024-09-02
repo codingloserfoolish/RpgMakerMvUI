@@ -16,10 +16,8 @@ signals:
 };
 
 
-#define ACTION_OBJECT(field_name,class_name,type)\
-QAction* field_name=new QAction(#class_name,this);\
-this->addAction(field_name);\
-connect(field_name,&QAction::triggered,this,std::bind(&RpgObjectMenu::slot_create_object,this,type))
+#define ACTION_OBJECT(class_name,type)\
+connect(this->addAction(#class_name),&QAction::triggered,this,std::bind(&RpgObjectMenu::slot_create_object,this,type))
 
 class RpgObjectMenu :public QMenu
 {
@@ -35,7 +33,7 @@ signals:
 
 #define CONTEXT_BEHAVIOR_DELETE 1
 #define CONTEXT_BEHAVIOR_CREATE 2
-
+#define CONTEXT_BEHAVIOR_EDIT   3
 
 class ContextPopMenu:public QMenu
 {

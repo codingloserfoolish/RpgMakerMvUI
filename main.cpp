@@ -3,11 +3,11 @@
 #include"Widget/StartWidget.h"
 #include"Widget/LoadWidget.h"
 #include"Widget/MainWindow.h"
-//#include"Widget/LoadWidget.h"
-//#include"Widget/ObjectsTreeWidget.h"
+#include"WindowEditor/WindowEditorMainWidget.h"
+#include"Manager/ConfigureInfoContainer.h"
 //LINE_EXTRA:qtvariantproperty.cpp
-#pragma comment( linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"" )
 
+#pragma comment( linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"" )
 void myMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
 	if (type != QtWarningMsg || !msg.startsWith("QWindowsWindow::setGeometry")) {
@@ -21,7 +21,6 @@ int main(int arg, char** argv)
 	qInstallMessageHandler(myMessageOutput);
 	QApplication a(arg, argv);
 	int exec_data = 0;
-
 	PreStartWidget* psw=new PreStartWidget;
 	StartWidget* tw = new StartWidget;
 	LoadWidget* lw = new LoadWidget;
@@ -52,6 +51,7 @@ int main(int arg, char** argv)
 	tw = 0; lw = 0;
 	if (ret)
 	{
+		ConfigureInfoContainer::instance()->setGameFont(PathManager::instance()->font_path());
 		MainWindow w;
 		if (result == 2)w.emit_load();
 		w.show();
@@ -59,5 +59,6 @@ int main(int arg, char** argv)
 	}
 
 	PathManager::destroy();
+	ConfigureInfoContainer::destroy();
 	return exec_data;
 }

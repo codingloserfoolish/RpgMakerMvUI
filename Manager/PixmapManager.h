@@ -33,7 +33,12 @@ public:
 	static void destroy();
 	Pixmap* loadPixmap(const QString&name);
 	Pixmap* createEmptyPixmap() { return &m_empty; }
+	QImage& colorBitmap() { return m_winskin; }
+	QPixmap& IVPixmap() { return m_tempIVPixmap; }
 protected:
+	QImage m_winskin;
+	QPixmap m_tempIVPixmap;
+
 	Pixmap m_empty;
 	Pixmap* m_head;
 	Pixmap* m_last;

@@ -1,9 +1,9 @@
 #include"GameObject.h"
 #include<qpixmap.h>
 #include<cmath>
-
 #include"RpgObjectFactory.h"
-
+#include"../Manager/RpgObjectEditorManager.h"
+#include"../RpgObjectEditor/RpgObjectEditorBase.h"
 int GameObject::_object_name_index = 0;
 
 GameObject::GameObject(int canvas_w, int canvas_h, QObject* parent)
@@ -20,13 +20,14 @@ GameObject::GameObject(int canvas_w, int canvas_h, QObject* parent)
 	m_bind_standardItem->setEditable(false);
 	m_bind_standardItem->setData(QVariant::fromValue(GameObject_Data(this)), GAMEOBJECT_ROLE);
 }
-#include<qdebug.h>
+
 GameObject::~GameObject()
 {
 	for (GameObject*& child : m_children) { 
 		delete child;
 		child = 0; 
 	}
+	this->on_destroy();
 	if(m_parent)
 	m_parent->standard_item()->removeRow(m_bind_standardItem->row());
 }
@@ -42,6 +43,7 @@ void GameObject::draw(QPainter& p)
 	QPixmap canvas(m_canvas_width, m_canvas_height);
 	canvas.fill(Qt::transparent);
 	QPainter p_self(&canvas);
+	p_self.setFont(p.font());
 	p_self.translate(m_canvas_width / 2, m_canvas_height / 2);
 	this->draw_self(p_self);
 	for (GameObject*& child : m_children)
@@ -128,6 +130,11 @@ void GameObject::removeChild(GameObject* object)
 	{
 		if (*it == object)
 		{
+			RpgObjectEditorBase* win = RpgObjectEditorManager::instance()->editor(object);
+			if (win->isVisible())
+			{
+				win->close();
+			}
 			m_children.erase(it);
 			delete object;
 			return;
@@ -184,6 +191,7 @@ void GameObject::Js_Context(QTextStream&textstream)
 {
 	textstream << Js_NewObject();
 	textstream << Js_AttributeSet()<<"\n";
+	this->Js_ExtraData(textstream);
 	for (GameObject* child : m_children)
 	{
 		child->Js_Context(textstream);

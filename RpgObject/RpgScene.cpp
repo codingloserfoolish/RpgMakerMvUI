@@ -2,6 +2,7 @@
 #include"RpgWindowBase.h"
 #include"RpgSprite.h"
 #include"RpgText.h"
+#include"RpgCommandWindow.h"
 RpgScene::RpgScene(int width, int height, QObject* parent):
 	GameObject(width,height,parent),
 	m_background(0)
@@ -16,6 +17,7 @@ void RpgScene::CreateObject(GameObject* parent, int x, int y, int type)
 	if (type == 0) { item = new RpgWindow(100, 100); }
 	else if (type == 1) { item = new RpgSprite; }
 	else if (type == 2) { item = new RpgText; }
+	else if (type == 3) {item = new RpgCommandWindow;}
 	if (item)
 	{
 		item->translate(x, y);
@@ -33,8 +35,10 @@ void RpgScene::Js_Context(QTextStream&textStream)
 	{
 		child->Js_Context(textStream);
 	}
-	textStream << "}";
-	
+	textStream << "}\n";
+	textStream << QString("%1.prototype.preReserveBitmap=function(){\n").arg(this->objectName());
+	JsImageReserveContainer::instance()->JsPreReserveBitmapWriter(textStream);
+	textStream << "}\n";
 }
 
 
@@ -58,7 +62,7 @@ QString RpgScene::Js_NewObject()
 	QString ClassProto = QString("function %1(){this.initialize.apply(this,arguments);}\n").arg(this->objectName());
 	QString Inherit = QString("%1.prototype=Object.create(hjdd.MainScene.prototype);\n"
 		"%1.prototype.constructor=%1;\n").arg(this->objectName());
-	QString Initialize = QString("%1.prototype.initialize=function(){\nhjdd.MainScene.prototype.initialize.call(this);}\n").arg(this->objectName());
+	QString Initialize = QString("%1.prototype.initialize=function(){hjdd.MainScene.prototype.initialize.call(this);}\n").arg(this->objectName());
 	return ClassProto + Inherit + Initialize;
 }
 

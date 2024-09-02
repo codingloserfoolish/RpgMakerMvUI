@@ -1,8 +1,25 @@
 #include"RpgWindowBase.h"
-
-RpgWindow::RpgWindow(float width, float height, QObject* parent):GameObject(width,height,parent)
+#include"../WindowEditor/WindowElement/WinElementBase.h"
+#include"../WindowEditor/WindowElement/WinElementFactory.h"
+#include"../WindowEditor/WindowEditorMainWidget.h"
+RpgWindow::RpgWindow(float width, float height, QObject* parent):
+	GameObject(width,height,parent),
+	m_if_check_message(true)
 {
 	m_system_window=PixmapManager::instance()->loadPixmap("system/Window");
+}
+
+RpgObjectEditorBase* RpgWindow::createEditor()
+{
+	return new WindowEditorMainWidget;
+}
+
+void RpgWindow::on_destroy()
+{
+	for (WinElementBase* element : m_window_elements)
+	{
+		delete element;
+	}
 }
 
 void RpgWindow::draw_self(QPainter& p)
@@ -19,6 +36,15 @@ void RpgWindow::draw_self(QPainter& p)
 	p.drawPixmap(24+pos_x, canvas_height()/2 - 24, canvas_width() - 48, 24, m_system_window->_pixmap, 120, 72, 48, 24);
 	p.drawPixmap(pos_x, canvas_height()/2 - 24, 24, 24, m_system_window->_pixmap, 96, 72, 24, 24);
 	p.drawPixmap(pos_x, 24+pos_y, 24, canvas_height() - 48, m_system_window->_pixmap, 96, 24, 24, 48);
+	if (m_window_elements.size() != 0)
+	{
+		p.translate(pos_x, pos_y);
+		for (WinElementBase* element : m_window_elements)
+		{
+			element->drawElement(p);
+		}
+		p.translate(-pos_x, -pos_y);
+	}
 }
 
 QString RpgWindow::Js_NewObject()
@@ -40,6 +66,15 @@ QString RpgWindow::Js_AttributeSet()
 	return  geometry + rotation+s_parent+check_message;
 }
 
+void RpgWindow::Js_ExtraData(QTextStream& stream)
+{
+	QString obj = QString("this.%1.").arg(this->objectName());
+	for (WinElementBase* element : m_window_elements)
+	{
+		stream << obj+element->JsInstructionForWinBase();
+	}
+}
+
 QDomElement RpgWindow::Xml_SaveData(QDomDocument& doc, QDomElement& parent_node)
 {
 	QDomElement Window_Node = doc.createElement("RpgWindow");
@@ -52,12 +87,21 @@ QDomElement RpgWindow::Xml_SaveData(QDomDocument& doc, QDomElement& parent_node)
 	c_transform.setAttribute("y", this->m_y);
 	c_transform.setAttribute("angle", this->m_angle);
 	Window_Node.appendChild(c_transform);
-
 	//Size
 	QDomElement c_size = doc.createElement("Size");
 	c_size.setAttribute("width",this->m_canvas_width);
 	c_size.setAttribute("height",this->m_canvas_height);
 	Window_Node.appendChild(c_size);
+	//Elements
+	if (m_window_elements.size() != 0)
+	{
+		QDomElement c_elements = doc.createElement("Elements");
+		for (WinElementBase* element : m_window_elements)
+		{
+			element->Xml_SaveElement(doc, c_elements);
+		}
+		Window_Node.appendChild(c_elements);
+	}
 
 	parent_node.appendChild(Window_Node);
 	return Window_Node;
@@ -75,11 +119,28 @@ QDomNode RpgWindow::Xml_LoadData(QDomNode& self)
 	this->m_x = c_transform.attribute("x").toFloat();
 	this->m_y = c_transform.attribute("y").toFloat();
 	this->m_angle = c_transform.attribute("angle").toFloat();
-
 	//Size
 	QDomElement c_size = c_transform.nextSiblingElement();
 	this->set_canvas_width(c_size.attribute("width").toInt());
 	this->set_canvas_height(c_size.attribute("height").toInt());
 
-	return c_size.nextSibling();
+	QDomElement c_elements = c_size.nextSiblingElement();
+	if (c_elements.nodeName() == "Elements")
+	{
+		this->LoadElements(c_elements.firstChildElement());
+		return c_elements.nextSibling();
+	}
+	return c_elements;
+}
+
+void RpgWindow::LoadElements(QDomElement&elements)
+{
+	QDomElement next = elements;
+	while (!next.isNull())
+	{
+		WinElementBase* item = WinElementFactory::create(next.nodeName());
+		m_window_elements.push_back(item);
+		item->Xml_LoadElement(next);
+		next = next.nextSiblingElement();
+	}
 }

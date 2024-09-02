@@ -26,6 +26,7 @@ MainWindow::~MainWindow()
 {
 	PixmapManager::destroy();
 	PartPropertyManager::destroy();
+	JsImageReserveContainer::destroy();
 }
 
 void MainWindow::initGraphicsWidget()
@@ -69,6 +70,11 @@ void MainWindow::initMenuBar()
 	RpgObjectMenu* rpgobject_menu = new RpgObjectMenu(this);
 	this->menuBar()->addMenu(rpgobject_menu);
 	connect(rpgobject_menu, &RpgObjectMenu::create_object, m_graphicsWidget, &GraphicsWindow::slot_generateObject);
+}
+
+void MainWindow::closeEvent(QCloseEvent*)
+{
+	m_graphicsWidget->close();
 }
 
 void MainWindow::slot_gameObjectBehivor(int behivor, QObject* obj)

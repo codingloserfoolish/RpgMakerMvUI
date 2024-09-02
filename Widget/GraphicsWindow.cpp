@@ -2,7 +2,9 @@
 #include<QMouseEvent>
 #include<qpainter.h>
 #include<qdebug.h>
+#include<qapplication.h>
 #include"../Manager/PathManager.h"
+#include"../Manager/ConfigureInfoContainer.h"
 
 GraphicsWindow::GraphicsWindow(QWidget* parent):QWidget(parent),m_scene(800,600),m_active_object(&m_scene)
 {
@@ -10,6 +12,7 @@ GraphicsWindow::GraphicsWindow(QWidget* parent):QWidget(parent),m_scene(800,600)
 	m_scene.standard_item()->setText(PathManager::instance()->sceneName());
 	this->setFixedSize(800, 600);
 	this->initContextPopMenu();
+	connect(&m_rpgobjectEditor, &RpgObjectEditorLaunch::itemChanged, [this]() {this->update(); });
 }
 
 void GraphicsWindow::initContextPopMenu()
@@ -22,12 +25,15 @@ void GraphicsWindow::initContextPopMenu()
 
 void GraphicsWindow::generateJs()
 {
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	QFile Jsfile(this->Jsfile_name());
 	Jsfile.open(QIODevice::WriteOnly);
 	QTextStream stream(&Jsfile);
+	stream.setCodec("utf-8");
 	m_scene.Js_Context(stream);
 	Jsfile.close();
-	qDebug() << "over";
+	//qDebug() << "over";
+	QApplication::restoreOverrideCursor();
 }
 
 void GraphicsWindow::saveXml()
@@ -146,14 +152,27 @@ void GraphicsWindow::slot_responseTriggerPopMenuEvent(int behavior, int param)
 		Vector3 vec = Mat_Vec_mutiply(owner->global_getTransMatrixIn(), Vector3(m_menuPos.x(), m_menuPos.y(), 1));
 		m_scene.CreateObject(m_active_object, vec._1,vec._2, param);
 	}
+	else if (behavior == CONTEXT_BEHAVIOR_EDIT)
+	{
+		if (m_active_object == 0 || m_active_object == &m_scene)return;
+		m_rpgobjectEditor.showEditor(m_active_object);
+		/*if (m_active_object->gm_type() == 0)
+		{
+			m_windowEditor->setRpgWindow((RpgWindow*)m_active_object);
+			m_windowEditor->show();
+		}*/
+		return;
+	}
 	this->update();
 }
 
 void GraphicsWindow::slot_Save()
 {
+	JsImageReserveContainer::instance()->removeFalseFloders();
 	this->generateJs();
 	this->saveXml();
 	this->savePath();
+	JsImageReserveContainer::instance()->declineAll();
 }
 
 void GraphicsWindow::slot_Load()
@@ -174,6 +193,7 @@ void GraphicsWindow::slot_Load()
 void GraphicsWindow::paintEvent(QPaintEvent* event)
 {
 	QPainter p(this);
+	p.setFont(ConfigureInfoContainer::instance()->gameFont());
 	m_scene.draw(p);
 	display_active_frame(p);
 	p.end();
@@ -223,6 +243,11 @@ void GraphicsWindow::mouseMoveEvent(QMouseEvent* event)
 		update();
 		emit gameObjectBehavior(GAMEOBJECT_MOVE, m_active_object);
 	}
+}
+
+void GraphicsWindow::closeEvent(QCloseEvent*)
+{
+	m_rpgobjectEditor.closeEditor();
 }
 
 void GraphicsWindow::display_active_frame(QPainter& p)

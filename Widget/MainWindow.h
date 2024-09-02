@@ -5,6 +5,7 @@
 #include"../QtPropertyBrowser/qttreepropertybrowser.h"
 
 
+#include"../Manager/JsImageReserveContainer.h"
 #include"../Manager/PixmapManager.h"
 #include"../Manager/PartPropertyManager.h"
 #include"../Manager/PathManager.h"
@@ -26,6 +27,8 @@ signals:
 	void reload();
 public slots:
 	void slot_gameObjectBehivor(int behivor, QObject* obj);
+protected:
+	virtual void closeEvent(QCloseEvent*)override;
 private:
 	GraphicsWindow* m_graphicsWidget;
 	QtVariantPropertyManager* m_propertyManager;
