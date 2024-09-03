@@ -1,0 +1,1 @@
+利用qt为rpgmaker mv设计的界面编辑器
