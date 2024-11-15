@@ -1,0 +1,4 @@
+#pragma once
+#define RPGOBJECT_WINDOWBASE	1
+#define RPGOBJECT_SPRITE		2
+#define RPGOBJECT_TEXT			3

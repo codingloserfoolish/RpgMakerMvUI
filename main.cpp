@@ -1,64 +1,41 @@
-#include<qapplication.h>
-#include"Widget/PreStartWidget.h"
-#include"Widget/StartWidget.h"
-#include"Widget/LoadWidget.h"
-#include"Widget/MainWindow.h"
-#include"WindowEditor/WindowEditorMainWidget.h"
-#include"Manager/ConfigureInfoContainer.h"
-//LINE_EXTRA:qtvariantproperty.cpp
+#include<QApplication>
+#include<QRegExp>
+//#include"widget/MainWindow.h"
+#include"manager/EditorLaunch.h"
+#include"manager/ConfigInfo.h"
+#include"widget/LauncherWidget.h"
+#include"WindowBaseEdit/ElementEditManager/ElementLoader.h"
 
-#pragma comment( linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"" )
-void myMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+/*
+* 由于WindowBase小世界的原因，释放内存和卸载动态库的顺序必须是
+* 先释放RpgObject,再释放EditorLaunch,最后卸载动态库
+*/
+int main(int argc,char**argv)
 {
-	if (type != QtWarningMsg || !msg.startsWith("QWindowsWindow::setGeometry")) {
-		QByteArray localMsg = msg.toLocal8Bit();
-		fprintf(stdout, localMsg.constData());
-	}
-}
+	QApplication app(argc,argv);
 
-int main(int arg, char** argv)
-{
-	qInstallMessageHandler(myMessageOutput);
-	QApplication a(arg, argv);
-	int exec_data = 0;
-	PreStartWidget* psw=new PreStartWidget;
-	StartWidget* tw = new StartWidget;
-	LoadWidget* lw = new LoadWidget;
+	hjdd::manager::ElementLibraryLoader::instance()->loadElementsName();
 
-	psw->setModal(true);
-	tw->setModal(true);
-	lw->setModal(true);
-	int ret = 0;
-	int result = 0;
-	while (psw && (ret=psw->exec()))
-	{
-		if (ret == 1&& QDialog::Accepted == tw->exec())
-		{
-			result = 1;
-		}
-		else if (ret == 2 && QDialog::Accepted == lw->exec())
-		{
-			result = 2;
-		}
+	hjdd::widget::MainWindow startWindow;
+	
+	hjdd::widget::LauncherWidget* w=new hjdd::widget::LauncherWidget;
+	w->setupUi();
+	w->initLoad();
+	w->setStartWindow(&startWindow);
+	w->resize(800, 600);
+	w->show();
 
-		if (result)
-		{
-			delete psw;
-			psw = 0;
-		}
-	}
-	delete tw; delete lw;
-	tw = 0; lw = 0;
-	if (ret)
-	{
-		ConfigureInfoContainer::instance()->setGameFont(PathManager::instance()->font_path());
-		MainWindow w;
-		if (result == 2)w.emit_load();
-		w.show();
-		exec_data = a.exec();
-	}
+	int exec = app.exec();
+	//到这里已经调用了MainWindow的closeEvent
 
-	PathManager::destroy();
-	ConfigureInfoContainer::destroy();
-	return exec_data;
+	//释放所有的编辑窗口，关于断开连接的操作在MainWindow的closeEvent里
+	hjdd::manager::EditorLaunch::instance()->destroyAll();
+
+	hjdd::manager::ElementLibraryLoader::instance()->unloadAllLib();
+
+	//最后卸载动态库，防止其他物体通过自动释放内存比卸载动态库晚而爆了
+	hjdd::manager::ObjectLoader::instance()->unloadAllLib();
+
+
+	return exec;
 }

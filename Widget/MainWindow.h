@@ -1,38 +1,63 @@
-#ifndef MAINWINDOW_H_
-#define MAINWINDOW_H_
-#include<qmainwindow.h>
-#include<qsplitter.h>
-#include"../QtPropertyBrowser/qttreepropertybrowser.h"
-
-
-#include"../Manager/JsImageReserveContainer.h"
-#include"../Manager/PixmapManager.h"
-#include"../Manager/PartPropertyManager.h"
-#include"../Manager/PathManager.h"
-#include"GraphicsWindow.h"
-#include"ObjectsTreeWidget.h"
-
-class MainWindow :public QMainWindow
+#pragma once
+#include<QMainWindow>
+#include<QMenuBar>
+#include<QLabel>
+#include"../view/GraphicsView.h"
+#include"../xmlParser/xmlParser.h"
+#include"../javascriptParser/JsParser.h"
+#include"TreeObjects.h"
+#include<QStatusBar>
+#include"Menu.h"
+namespace hjdd
 {
-	Q_OBJECT
-public:
-	MainWindow(QWidget* parent=nullptr);
-	~MainWindow();
-	void initGraphicsWidget();
-	void initPropertyWidget();
-	void initObjectsTreeWidget();
-	void initMenuBar();
-	void emit_load() { emit reload(); }
-signals:
-	void reload();
-public slots:
-	void slot_gameObjectBehivor(int behivor, QObject* obj);
-protected:
-	virtual void closeEvent(QCloseEvent*)override;
-private:
-	GraphicsWindow* m_graphicsWidget;
-	QtVariantPropertyManager* m_propertyManager;
-	QtTreePropertyBrowser* m_propertyWidget;
-	ObjectsTreeWidget* m_objectsTreeWidget;
-};
-#endif // !MAINWINDOW_H_
+	namespace widget
+	{
+
+		class SizeLabel :public QLabel
+		{
+			Q_OBJECT
+		public:
+			SizeLabel(const QString&text,QWidget* parent = nullptr);
+			virtual~SizeLabel() {}
+		signals:
+			void doubleClicked();
+		protected:
+			virtual void mouseDoubleClickEvent(QMouseEvent* event);
+		};
+
+		class MainWindow :public QMainWindow
+		{
+			Q_OBJECT
+		public:
+			MainWindow(QWidget*parent=nullptr);
+			virtual~MainWindow() {}
+
+			//void loadConfig();
+			//void saveConfig();
+
+			void initUI();
+
+			void saveGraphics();
+			bool loadCurrentGraphics();
+			bool loadSelectedGraphics();
+			void checkGenerateJsFile(bool checked);
+			void generateJsFile();
+		public slots:
+			void slot_Menu(int id);
+			void slot_setStatusBarUnsaved();
+			void slot_startSizeEdit();
+			void slot_sizeEditFinished();
+		protected:
+			virtual void closeEvent(QCloseEvent* event);
+			virtual void resizeEvent(QResizeEvent* event);
+		private:
+			bool m_isLoaded;
+			bool m_needCompile;
+			TreeObjects* m_treeObjectsWidget;
+			view::GraphicsView* m_graphicsView;
+			QLabel* m_statusInfo;
+			SizeLabel* m_sizeInfo;
+			QLineEdit* m_sizeEdit;
+		};
+	}
+}

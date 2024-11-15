@@ -1,31 +1,74 @@
 cmake_minimum_required(VERSION 3.10)
-
-project(RpgObject)
-
-set(CMAKE_AUTOUIC ON)
+project(RpgObjectDll)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
+find_package(Qt5 COMPONENTS Core Widgets Xml)
 
-set(CMAKE_CXX_STANDARD 11)
+set(COMPILE_WINDOW TRUE)
 
-find_package(Qt5 REQUIRED Widgets Xml)
+if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+set(OUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}"/../bin/release")
+else()
+set(OUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}"/../bin")
+endif()
 
-add_library(${PROJECT_NAME} STATIC
-"GameObject.h"
-"RpgScene.h"
-"RpgSprite.h"
-"RpgText.h"
-"RpgWindowBase.h"
-"RpgObjectFactory.h"
-"RpgCommandWindow.h"
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUT_PATH}"/plugin/lib")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUT_PATH}"/plugin/lib")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUT_PATH}"/plugin/dll")
+find_library(TOOLS_LIB tools PATHS ${OUT_PATH}"/lib")
+find_library(MANAGER_LIB manager PATHS ${OUT_PATH}"/lib")
+find_library(ITEM_LIB item PATHS ${OUT_PATH}"/lib")
 
-"GameObject.cpp"
-"RpgScene.cpp"
-"RpgSprite.cpp"
-"RpgText.cpp"
-"RpgWindowBase.cpp"
-"RpgObjectFactory.cpp"
-"RpgCommandWindow.cpp")
+if(COMPILE_WINDOW)
+find_library(ELEMENT_MANAGER elementManager PATHS ${OUT_PATH}"/lib")
+find_library(IBASE IWinBaseElement PATHS ${OUT_PATH}"/lib")
+endif()
 
+if(NOT COMPILE_WINDOW)
+add_library(Sprite SHARED
+"Sprite.cpp"
+"SpriteEditor.cpp"
+)
+target_link_libraries(Sprite 
+Qt5::Core 
+Qt5::Widgets 
+Qt5::Xml
+${MANAGER_LIB}
+${ITEM_LIB}
+)
+target_compile_definitions(Sprite PRIVATE DLL_SPRITE_EPORT)
+target_include_directories(Sprite PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Xml)
+add_library(Text SHARED
+"Text.cpp"
+"TextEditor.cpp"
+)
+target_link_libraries(Text 
+Qt5::Core 
+Qt5::Widgets 
+Qt5::Xml
+${TOOLS_LIB}
+${MANAGER_LIB}
+${ITEM_LIB}
+)
+target_compile_definitions(Text PRIVATE DLL_TEXT_EXPORT)
+target_include_directories(Text PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+else()
+add_library(WindowBase SHARED
+"WindowBase.cpp"
+"WindowBaseEditor.cpp"
+"../WindowBaseEdit/ElementEditManager/ElementEditorManager.cpp"
+"../WindowBaseEdit/Widget/ElementDisplayWidget.cpp"
+"../WindowBaseEdit/Widget/Menu.cpp"
+)
+target_link_libraries(WindowBase 
+Qt5::Core 
+Qt5::Widgets 
+Qt5::Xml
+${MANAGER_LIB}
+${ITEM_LIB}
+${IBASE}
+${ELEMENT_MANAGER}
+)
+target_compile_definitions(WindowBase PRIVATE DLL_WINDOWBASE_EXPORT)
+target_include_directories(WindowBase PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+endif()

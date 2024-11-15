@@ -1,38 +1,67 @@
+#如何编译滑倒最下面
+#
 cmake_minimum_required(VERSION 3.10)
-
-project(RPGMakerUI)
-
-set(CMAKE_AUTOUIC ON)
+project(RpgMakerMvUI)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+set(APP_ICON_RESOURCE_WINDOWS ${CMAKE_CURRENT_SOURCE_DIR}"/resources.rc")
 
-set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/RPGMakerUI.rc")
+if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+set(EXECUTABLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}"/bin/release")
+set(LIB_FIND_PATH ${CMAKE_CURRENT_SOURCE_DIR}"/bin/release/lib")
+else()
+set(EXECUTABLE_PATH ${CMAKE_CURRENT_SOURCE_DIR}"/bin")
+set(LIB_FIND_PATH ${CMAKE_CURRENT_SOURCE_DIR}"/bin/lib")
+endif()
 
-#find_package(Qt5 REQUIRED Widgets)
+find_package(Qt5 COMPONENTS Core Widgets Xml)
 
-add_executable(${PROJECT_NAME} main.cpp ${RPG_SOURCES} ${APP_ICON_RESOURCE_WINDOWS})
+set(EXECUTABLE_OUTPUT_PATH ${EXECUTABLE_PATH})
 
-add_subdirectory(QtPropertyBrowser)
-add_subdirectory(Manager)
-add_subdirectory(RpgObject)
-add_subdirectory(MyTransform)
-add_subdirectory(Widget)
-add_subdirectory(WindowEditor)
-add_subdirectory(BoringFunction)
-add_subdirectory(RpgObjectEditor)
-add_subdirectory(Dialog)
+find_library(TOOLS tools PATHS ${LIB_FIND_PATH})
+find_library(MANAGER manager PATHS ${LIB_FIND_PATH})
+find_library(ITEM item PATHS ${LIB_FIND_PATH})
+find_library(ELEMENT_MANAGER elementManager PATHS ${LIB_FIND_PATH})
+
+aux_source_directory("scene" SCENE_SRC)
+aux_source_directory("view" VIEW_SRC)
+aux_source_directory("widget" WIDGET_SRC)
+set(MANAGER_SRC 
+"manager/EditorLaunch.cpp" 
+"manager/ObjectsFactory.cpp"
+"manager/ObjectLoader.cpp")
+aux_source_directory("xmlParser" XMLPARSER_SRC)
+aux_source_directory("javascriptParser" JSPARSER_SRC)
+
+add_executable(${PROJECT_NAME} WIN32
+"main.cpp"
+${SCENE_SRC}
+${VIEW_SRC}
+${WIDGET_SRC}
+${MANAGER_SRC}
+${XMLPARSER_SRC}
+${JSPARSER_SRC}
+${APP_ICON_RESOURCE_WINDOWS}
+)
 
 target_link_libraries(${PROJECT_NAME} 
-qtpropertybrowser
-Manager
-RpgObject
-MyTransform
-Widget
-WindowEditor
-BoringFunction
-RpgObjectEditor
-Dialog
+Qt5::Core
+Qt5::Widgets
+Qt5::Xml
+${TOOLS}
+${ITEM}
+${MANAGER}
+${ELEMENT_MANAGER}
 )
+
+#编译顺序fasttools->item->
+#WindowBaseEdit(进入先COMPILE_IWINBASE=TRUE COMPILE_MANAGER=FALSE  ->
+#COMPILE_IWINBASE=FALSE COMPILE_MANAGER=TRUE->COMPILE_IWINBASE=FALSE COMPILE_MANAGER=FALSE)->
+#manager->
+#rpgobject (进入COMPILE_WINDOW=TRUE->COMPILE_WINDOW=FALSE)
+#add_subdirectory(fasttools)
+#add_subdirectory(item)
+#add_subdirectory(WindowBaseEdit)
+#add_subdirectory(manager)
+#add_subdirectory(rpgobject)
